@@ -5,9 +5,13 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: macos-latest
@@ -28,9 +32,13 @@ jobs:
         working-directory: app
         run: npm ci
 
-      - name: Build & Package
+      - name: Build Vite
         working-directory: app
-        run: npm run electron:build
+        run: npx vite build
+
+      - name: Package Electron
+        working-directory: app
+        run: npx electron-builder --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -40,8 +48,9 @@ jobs:
         with:
           files: app/release/*.dmg
 
-      - name: Upload Windows EXE
+      - name: Upload Windows installer
         if: matrix.platform == 'win'
         uses: softprops/action-gh-release@v2
         with:
-          files: app/release/*.exe
+          files: |
+            app/release/*.exe
