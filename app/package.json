@@ -2,8 +2,9 @@
   "name": "notus",
   "version": "1.0.0",
   "description": "Notus — AI-powered local notes app",
-  "author": "Notus",
+  "author": "wozdev8",
   "private": true,
+  "repository": "github:wozdev8/notus",
   "main": "electron/main.js",
   "scripts": {
     "dev": "vite",
