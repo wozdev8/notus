@@ -1,0 +1,55 @@
+{
+  "name": "notus",
+  "version": "1.0.0",
+  "description": "Notus — AI-powered local notes app",
+  "author": "Notus",
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 3000",
+    "electron:dev": "electron .",
+    "electron:build": "vite build && electron-builder"
+  },
+  "dependencies": {
+    "@blocknote/core": "^0.24.0",
+    "@blocknote/mantine": "^0.24.0",
+    "@blocknote/react": "^0.24.0",
+    "@mantine/core": "^7.17.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.0",
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8",
+    "electron-updater": "^6.8.3",
+    "vite": "^6.0.0"
+  },
+  "build": {
+    "appId": "com.notus.app",
+    "productName": "Notus",
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.png"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../connector",
+        "to": "connector",
+        "filter": ["**/*", "!node_modules/**"]
+      }
+    ]
+  }
+}

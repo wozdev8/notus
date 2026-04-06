@@ -1,0 +1,19 @@
+{
+  "name": "notevault",
+  "version": "1.0.0",
+  "description": "NoteVault - Private local notes with Claude Code AI analysis",
+  "scripts": {
+    "app": "npx serve app -l 3000",
+    "connector": "node connector/server.js",
+    "website": "npx serve website -l 8080",
+    "start": "echo 'Run: npm run app (in terminal 1) and npm run connector (in terminal 2)'",
+    "test": "vitest run"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "jsdom": "^29.0.1",
+    "vitest": "^4.1.2"
+  }
+}
