@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Notus — AI-powered local notes app. Write, organize, and let AI analyze your notes. Everything stays on your device.">
+  <meta name="theme-color" content="#000000">
+  <meta property="og:title" content="Notus — AI-Powered Notes">
+  <meta property="og:description" content="Write notes with a rich editor. Let AI edit, analyze, and find insights — all running locally on your machine.">
+  <title>Notus — AI-Powered Notes</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #09090b; --bg2: #18181b; --bg3: #27272a;
+      --text: #fafafa; --text2: #a1a1aa; --text3: #71717a;
+      --accent: #D97757; --accent2: #c4643f;
+      --border: #27272a;
+      --radius: 12px;
+    }
+
+    html { overflow-x: hidden; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; max-width: 100vw; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Nav ─────────────────────────── */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 16px 0; transition: all .3s; }
+    nav.scrolled { background: rgba(9,9,11,.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 22px; color: var(--text); text-decoration: none; letter-spacing: -.03em; }
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-links a { color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { background: var(--accent); color: #fff !important; padding: 8px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+    .nav-cta:hover { background: var(--accent2); color: #fff !important; }
+
+    /* ── Hero ─────────────────────────── */
+    .hero { padding: 160px 0 100px; text-align: center; position: relative; }
+    .hero::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(217,119,87,.12) 0%, transparent 70%); pointer-events: none; }
+    .hero-badge { display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; color: var(--accent); border: 1px solid rgba(217,119,87,.25); background: rgba(217,119,87,.06); margin-bottom: 24px; }
+    .hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(40px, 6vw, 72px); font-weight: 700; line-height: 1.05; letter-spacing: -.04em; margin-bottom: 24px; }
+    .hero h1 span { background: linear-gradient(135deg, var(--accent), #e8a87c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-sub { font-size: 18px; color: var(--text2); max-width: 560px; margin: 0 auto 40px; line-height: 1.7; }
+    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── Buttons ──────────────────────── */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 10px; font-size: 15px; font-weight: 600; text-decoration: none; transition: all .2s; border: none; cursor: pointer; font-family: inherit; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(217,119,87,.25); }
+    .btn-ghost { background: var(--bg3); color: var(--text); }
+    .btn-ghost:hover { background: #333; }
+
+    /* ── Preview ──────────────────────── */
+    .hero-preview { margin-top: 64px; position: relative; }
+    .preview-window { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,.5); }
+    .preview-titlebar { height: 44px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 8px; }
+    .preview-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--bg3); }
+    .preview-titlebar span { margin-left: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; color: var(--text3); }
+    .preview-content { display: grid; grid-template-columns: 220px 1fr; height: 340px; }
+    .preview-sidebar { background: var(--bg); border-right: 1px solid var(--border); padding: 16px; }
+    .preview-sidebar-btn { width: 100%; height: 32px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 12px; }
+    .preview-item { padding: 10px; border-radius: 8px; margin-bottom: 4px; }
+    .preview-item.active { background: var(--bg3); }
+    .preview-item-title { height: 10px; background: var(--text3); border-radius: 3px; width: 70%; margin-bottom: 6px; opacity: .4; }
+    .preview-item-text { height: 8px; background: var(--text3); border-radius: 3px; width: 90%; opacity: .15; }
+    .preview-editor { padding: 24px 32px; display: flex; flex-direction: column; }
+    .preview-editor-title { height: 28px; background: var(--text); border-radius: 4px; width: 45%; margin-bottom: 16px; opacity: .15; }
+    .preview-line { height: 10px; background: var(--text3); border-radius: 3px; margin-bottom: 10px; opacity: .12; }
+    .preview-line.w90 { width: 90%; } .preview-line.w80 { width: 80%; } .preview-line.w70 { width: 70%; } .preview-line.w50 { width: 50%; }
+    .preview-ai-bar { margin-top: auto; display: flex; gap: 8px; }
+    .preview-ai-input { flex: 1; height: 36px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; }
+    .preview-ai-btn { height: 36px; width: 64px; background: var(--accent); border-radius: 8px; opacity: .8; }
+
+    /* ── Features Bento ───────────────── */
+    .features { padding: 120px 0; }
+    .section-label { font-size: 13px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; }
+    .section-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(28px, 4vw, 42px); font-weight: 700; letter-spacing: -.03em; margin-bottom: 16px; }
+    .section-desc { color: var(--text2); font-size: 16px; max-width: 480px; }
+    .features-header { text-align: center; margin-bottom: 72px; }
+    .features-header .section-desc { margin: 0 auto; }
+    .bento { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: minmax(200px, auto); gap: 16px; }
+    .bento-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 32px; position: relative; overflow: hidden; transition: border-color .3s, transform .3s; }
+    .bento-card:hover { border-color: #3f3f46; transform: translateY(-2px); }
+    .bento-card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 600; margin-bottom: 8px; letter-spacing: -.01em; position: relative; z-index: 2; }
+    .bento-card p { font-size: 14px; color: var(--text2); line-height: 1.6; position: relative; z-index: 2; }
+    .bento-wide { grid-column: span 2; }
+    .bento-tall { grid-row: span 2; display: flex; flex-direction: column; }
+
+    /* Card 1: Editor — typing animation */
+    .bento-editor .bento-demo { margin-top: 24px; background: var(--bg); border-radius: 10px; padding: 16px; border: 1px solid var(--border); flex: 1; }
+    .bento-editor .typing-line { height: 14px; border-radius: 4px; margin-bottom: 8px; background: linear-gradient(90deg, var(--bg3) 0%, var(--bg3) 50%, transparent 50%); background-size: 200% 100%; animation: shimmer 2s infinite; }
+    .bento-editor .typing-line:nth-child(1) { width: 35%; height: 20px; background: var(--text); opacity: .15; animation: none; }
+    .bento-editor .typing-line:nth-child(2) { width: 85%; animation-delay: .2s; }
+    .bento-editor .typing-line:nth-child(3) { width: 70%; animation-delay: .4s; }
+    .bento-editor .typing-line:nth-child(4) { width: 55%; animation-delay: .6s; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* Card 2: AI — glowing orb */
+    .bento-ai { position: relative; }
+    .bento-ai .orb { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, var(--accent) 0%, transparent 70%); opacity: .15; animation: pulse-orb 3s ease-in-out infinite; filter: blur(20px); }
+    .bento-ai .ai-prompt { margin-top: 20px; display: flex; gap: 8px; }
+    .bento-ai .ai-prompt-input { flex: 1; height: 36px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; position: relative; overflow: hidden; }
+    .bento-ai .ai-prompt-input::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(217,119,87,.08), transparent); animation: scan 2.5s infinite; }
+    .bento-ai .ai-prompt-btn { width: 56px; height: 36px; background: var(--accent); border-radius: 8px; }
+    @keyframes pulse-orb { 0%,100% { transform: translateY(-50%) scale(1); opacity: .12; } 50% { transform: translateY(-50%) scale(1.3); opacity: .22; } }
+    @keyframes scan { 0% { left: -100%; } 100% { left: 200%; } }
+
+    /* Card 3: Privacy — lock animation */
+    .bento-privacy .lock-icon { margin-top: 24px; display: flex; align-items: center; justify-content: center; }
+    .bento-privacy .lock-ring { width: 64px; height: 64px; border: 3px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all .5s; animation: lock-pulse 4s ease-in-out infinite; }
+    .bento-privacy:hover .lock-ring { border-color: var(--accent); box-shadow: 0 0 24px rgba(217,119,87,.2); }
+    .bento-privacy .lock-ring svg { color: var(--text3); transition: color .5s; }
+    .bento-privacy:hover .lock-ring svg { color: var(--accent); }
+    @keyframes lock-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(217,119,87,0); } 50% { box-shadow: 0 0 20px 4px rgba(217,119,87,.08); } }
+
+    /* Card 4: Tags — floating pills */
+    .bento-tags .tag-cloud { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .bento-tags .floating-tag { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid var(--border); color: var(--text2); animation: float-tag 3s ease-in-out infinite; }
+    .bento-tags .floating-tag:nth-child(1) { background: rgba(217,119,87,.1); border-color: rgba(217,119,87,.2); color: var(--accent); animation-delay: 0s; }
+    .bento-tags .floating-tag:nth-child(2) { animation-delay: .5s; }
+    .bento-tags .floating-tag:nth-child(3) { animation-delay: 1s; }
+    .bento-tags .floating-tag:nth-child(4) { background: rgba(74,158,255,.1); border-color: rgba(74,158,255,.2); color: #4a9eff; animation-delay: 1.5s; }
+    .bento-tags .floating-tag:nth-child(5) { animation-delay: .8s; }
+    @keyframes float-tag { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+    /* Card 5: Images — stacked previews */
+    .bento-images .img-stack { margin-top: 20px; position: relative; height: 80px; }
+    .bento-images .img-card { position: absolute; width: 80px; height: 60px; background: var(--bg3); border-radius: 8px; border: 1px solid var(--border); transition: transform .4s cubic-bezier(.16,1,.3,1); }
+    .bento-images .img-card:nth-child(1) { left: 0; top: 8px; transform: rotate(-4deg); z-index: 3; background: linear-gradient(135deg, #2a2a3a, #3a2a2a); }
+    .bento-images .img-card:nth-child(2) { left: 40px; top: 4px; transform: rotate(2deg); z-index: 2; background: linear-gradient(135deg, #2a3a2a, #2a2a3a); }
+    .bento-images .img-card:nth-child(3) { left: 80px; top: 10px; transform: rotate(-1deg); z-index: 1; background: linear-gradient(135deg, #3a3a2a, #2a3a3a); }
+    .bento-images:hover .img-card:nth-child(1) { transform: rotate(0) translateX(-8px); }
+    .bento-images:hover .img-card:nth-child(2) { transform: rotate(0) translateY(-6px); }
+    .bento-images:hover .img-card:nth-child(3) { transform: rotate(0) translateX(8px); }
+
+    /* Card 6: Theme — toggle */
+    .bento-theme .theme-toggle { margin-top: 20px; display: flex; gap: 12px; align-items: center; justify-content: center; }
+    .bento-theme .theme-pill { width: 48px; height: 28px; border-radius: 14px; background: var(--bg3); border: 1px solid var(--border); position: relative; cursor: pointer; transition: background .3s; }
+    .bento-theme .theme-pill::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); transition: transform .3s; }
+    .bento-theme:hover .theme-pill::after { transform: translateX(20px); }
+    .bento-theme .theme-preview { display: flex; gap: 8px; }
+    .bento-theme .theme-swatch { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); }
+    .bento-theme .theme-swatch.dark { background: #09090b; }
+    .bento-theme .theme-swatch.light { background: #fafafa; }
+
+    /* ── Powered by ────────────────────── */
+    .powered { padding: 100px 0; border-top: 1px solid var(--border); }
+    .powered-header { text-align: center; margin-bottom: 56px; }
+    .powered-header .section-desc { margin: 0 auto; }
+    .powered-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 720px; margin: 0 auto; }
+    .powered-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 32px; position: relative; text-align: center; }
+    .powered-active { border-color: rgba(217,119,87,.3); }
+    .powered-status { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 20px; }
+    .powered-status.live { background: rgba(217,119,87,.12); color: var(--accent); }
+    .powered-status.soon { background: rgba(255,255,255,.06); color: var(--text3); }
+    .powered-logo { margin-bottom: 16px; }
+    .powered-card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+    .powered-card p { font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 16px; }
+    .powered-card code { display: inline-block; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 12px; color: var(--accent); font-family: 'SF Mono', Consolas, monospace; }
+    .powered-eta { font-size: 13px; color: var(--text3); font-weight: 500; }
+    .powered-soon { opacity: .6; }
+
+    /* ── Download buttons ─────────────── */
+    .download-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+    .download-btn { flex-direction: column; gap: 2px; padding: 14px 32px; min-width: 200px; text-align: center; justify-content: center; }
+    .download-btn small { font-size: 11px; opacity: .6; font-weight: 400; }
+    .btn-primary, .btn-primary:hover, .btn-primary:visited { color: #fff; }
+    .btn-ghost, .btn-ghost:visited { color: var(--text); }
+    .cta-req { font-size: 13px; color: var(--text3); }
+    .cta-req a { color: var(--accent); text-decoration: none; }
+    .cta-req a:hover { text-decoration: underline; }
+
+    /* ── How it works ─────────────────── */
+    .how { padding: 120px 0; border-top: 1px solid var(--border); }
+    .how-header { text-align: center; margin-bottom: 72px; }
+    .how-header .section-desc { margin: 0 auto; }
+    .steps { display: flex; gap: 32px; }
+    .step { flex: 1; text-align: center; }
+    .step-num { width: 48px; height: 48px; border-radius: 50%; background: var(--accent); color: #fff; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+    .step h3 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .step p { font-size: 14px; color: var(--text2); line-height: 1.6; }
+    .step code { display: inline-block; margin-top: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 14px; font-size: 13px; color: var(--accent); font-family: 'SF Mono', Consolas, monospace; }
+
+    /* ── CTA ──────────────────────────── */
+    .cta { padding: 120px 0; text-align: center; position: relative; }
+    .cta::before { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 800px; height: 400px; background: radial-gradient(circle, rgba(217,119,87,.08) 0%, transparent 70%); pointer-events: none; }
+    .cta h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(28px, 4vw, 44px); font-weight: 700; letter-spacing: -.03em; margin-bottom: 16px; }
+    .cta p { color: var(--text2); font-size: 17px; margin-bottom: 32px; max-width: 440px; margin-left: auto; margin-right: auto; }
+
+    /* ── Footer ───────────────────────── */
+    footer { padding: 40px 0; border-top: 1px solid var(--border); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; }
+    .footer-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -.03em; }
+    footer p { font-size: 13px; color: var(--text3); }
+
+    /* ── Animations ───────────────────── */
+    .reveal { opacity: 0; transform: translateY(24px); transition: all .6s cubic-bezier(.16,1,.3,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Mobile ───────────────────────── */
+    @media (max-width: 768px) {
+      .hero::before, .cta::before { width: 300px; height: 300px; }
+      .hero { padding: 120px 0 60px; }
+      .bento { grid-template-columns: 1fr; }
+      .powered-grid { grid-template-columns: 1fr; }
+      .download-buttons { flex-direction: column; align-items: stretch; }
+      .download-btn { min-width: auto; }
+      .bento-wide, .bento-tall { grid-column: span 1; grid-row: span 1; }
+      .steps { flex-direction: column; }
+      .preview-content { grid-template-columns: 1fr; }
+      .preview-sidebar { display: none; }
+      .nav-links { display: none; }
+      .footer-inner { flex-direction: column; gap: 12px; text-align: center; }
+      .features, .powered, .how, .cta { padding: 80px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="container nav-inner">
+      <a href="#" class="nav-logo">Notus</a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How It Works</a>
+        <a href="#cta" class="nav-cta">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge reveal">Local AI. Private by default.</div>
+      <h1 class="reveal">Notes that<br><span>think with you.</span></h1>
+      <p class="hero-sub reveal">A rich-text editor with AI built in. Write notes, attach images, organize with tags — and let AI edit, analyze, and find insights. Everything runs locally on your machine. Mac & Windows.</p>
+      <div class="hero-actions reveal">
+        <a href="#cta" class="btn btn-primary">Get Notus</a>
+        <a href="#features" class="btn btn-ghost">See features</a>
+      </div>
+      <div class="hero-preview reveal">
+        <div class="preview-window">
+          <div class="preview-titlebar">
+            <div class="preview-dot"></div>
+            <div class="preview-dot"></div>
+            <div class="preview-dot"></div>
+            <span>Notus</span>
+          </div>
+          <div class="preview-content">
+            <div class="preview-sidebar">
+              <div class="preview-sidebar-btn"></div>
+              <div class="preview-item active"><div class="preview-item-title"></div><div class="preview-item-text"></div></div>
+              <div class="preview-item"><div class="preview-item-title"></div><div class="preview-item-text"></div></div>
+              <div class="preview-item"><div class="preview-item-title"></div><div class="preview-item-text"></div></div>
+              <div class="preview-item"><div class="preview-item-title"></div><div class="preview-item-text"></div></div>
+            </div>
+            <div class="preview-editor">
+              <div class="preview-editor-title"></div>
+              <div class="preview-line w90"></div>
+              <div class="preview-line w80"></div>
+              <div class="preview-line w70"></div>
+              <div class="preview-line w50"></div>
+              <div class="preview-line w80"></div>
+              <div class="preview-ai-bar">
+                <div class="preview-ai-input"></div>
+                <div class="preview-ai-btn"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="container">
+      <div class="features-header reveal">
+        <div class="section-label">Capabilities</div>
+        <h2 class="section-title">Built different.</h2>
+        <p class="section-desc">Six things that make Notus unlike anything else.</p>
+      </div>
+      <div class="bento">
+        <!-- 1: Editor — wide, tall, with typing demo -->
+        <div class="bento-card bento-wide bento-tall bento-editor reveal">
+          <h3>Block-based editor</h3>
+          <p>Headings, checklists, code, tables, images — a Notion-like editor that feels native.</p>
+          <div class="bento-demo">
+            <div class="typing-line"></div>
+            <div class="typing-line"></div>
+            <div class="typing-line"></div>
+            <div class="typing-line"></div>
+          </div>
+        </div>
+
+        <!-- 2: AI — with glowing orb -->
+        <div class="bento-card bento-ai reveal">
+          <div class="orb"></div>
+          <h3>AI that edits for you</h3>
+          <p>Rewrite, expand, fix, transform. AI sees the full markdown structure of your note.</p>
+          <div class="ai-prompt">
+            <div class="ai-prompt-input"></div>
+            <div class="ai-prompt-btn"></div>
+          </div>
+        </div>
+
+        <!-- 3: Privacy — lock ring -->
+        <div class="bento-card bento-privacy reveal">
+          <h3>100% local</h3>
+          <p>Zero cloud. Zero tracking. Your notes never leave your device.</p>
+          <div class="lock-icon">
+            <div class="lock-ring">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4: Tags — floating pills -->
+        <div class="bento-card bento-tags reveal">
+          <h3>Tags & search</h3>
+          <p>Organize, filter, find. AI can analyze notes by tag too.</p>
+          <div class="tag-cloud">
+            <span class="floating-tag">work</span>
+            <span class="floating-tag">ideas</span>
+            <span class="floating-tag">journal</span>
+            <span class="floating-tag">project-x</span>
+            <span class="floating-tag">todo</span>
+          </div>
+        </div>
+
+        <!-- 5: Images — stacked cards -->
+        <div class="bento-card bento-images reveal">
+          <h3>Images + AI vision</h3>
+          <p>Drop images in. AI describes and extracts content.</p>
+          <div class="img-stack">
+            <div class="img-card"></div>
+            <div class="img-card"></div>
+            <div class="img-card"></div>
+          </div>
+        </div>
+
+        <!-- 6: Theme — toggle demo -->
+        <div class="bento-card bento-theme reveal">
+          <h3>Dark & light</h3>
+          <p>Seamless theme switching across every element.</p>
+          <div class="theme-toggle">
+            <div class="theme-preview">
+              <div class="theme-swatch dark"></div>
+              <div class="theme-swatch light"></div>
+            </div>
+            <div class="theme-pill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Powered by -->
+  <section class="powered" id="powered">
+    <div class="container">
+      <div class="powered-header reveal">
+        <div class="section-label">AI Backends</div>
+        <h2 class="section-title">Runs on the AI you already have</h2>
+        <p class="section-desc">Notus connects to AI tools installed on your machine. No API keys. No cloud.</p>
+      </div>
+      <div class="powered-grid">
+        <div class="powered-card powered-active reveal">
+          <div class="powered-status live">Live</div>
+          <div class="powered-logo">
+            <svg viewBox="0 0 24 24" width="32" height="32"><path fill="#D97757" d="M15.58 11.17l-3.07-7.64a.553.553 0 00-1.02 0L8.42 11.17a.553.553 0 01-.29.3l-7.64 3.07a.553.553 0 000 1.02l7.64 3.07c.13.05.24.16.3.3l3.06 7.64a.553.553 0 001.02 0l3.07-7.65c.05-.13.16-.24.3-.3l7.64-3.06a.553.553 0 000-1.02l-7.65-3.07a.553.553 0 01-.3-.3z"/></svg>
+          </div>
+          <h3>Claude Code</h3>
+          <p>Full support. Install Claude Code CLI and the built-in connector handles everything — starts automatically with the app.</p>
+          <code>npm i -g @anthropic-ai/claude-code</code>
+        </div>
+        <div class="powered-card powered-soon reveal">
+          <div class="powered-status soon">Coming soon</div>
+          <div class="powered-logo">
+            <svg viewBox="0 0 24 24" width="32" height="32"><circle cx="12" cy="12" r="10" fill="#10a37f"/><path d="M12 7v5l3 3" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <h3>ChatGPT</h3>
+          <p>In development. Connect to ChatGPT desktop app for AI editing and analysis — same local workflow.</p>
+          <span class="powered-eta">In development</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <div class="container">
+      <div class="how-header reveal">
+        <div class="section-label">Setup</div>
+        <h2 class="section-title">Up and running in 2 minutes</h2>
+        <p class="section-desc">Two steps. No sign-up. No config.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num">1</div>
+          <h3>Install Claude Code</h3>
+          <p>The AI backend that powers Notus. One command.</p>
+          <code>npm i -g @anthropic-ai/claude-code</code>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">2</div>
+          <h3>Download & open Notus</h3>
+          <p>Grab the .dmg for Mac or .exe for Windows. Install, open — everything works out of the box. The AI connector starts automatically.</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">3</div>
+          <h3>Write & ask AI</h3>
+          <p>Create notes, attach images, organize with tags. Ask AI to edit, analyze, or find insights — right from the prompt bar.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" id="cta">
+    <div class="container reveal">
+      <h2>Start writing smarter.</h2>
+      <p>Download for your platform. Requires Claude Code CLI installed.</p>
+      <div class="download-buttons">
+        <a href="https://github.com/wozdev8/notus/releases" class="btn btn-primary download-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          Download for Mac
+          <small>.dmg</small>
+        </a>
+        <a href="https://github.com/wozdev8/notus/releases" class="btn btn-ghost download-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+          Download for Windows
+          <small>.exe</small>
+        </a>
+      </div>
+      <p class="cta-req">Requires <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank">Claude Code</a> installed on your machine</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <div class="footer-logo">Notus</div>
+      <p>Private notes. Local AI. No tracking.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Nav scroll
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40));
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const t = document.querySelector(a.getAttribute('href'));
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Reveal on scroll
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>
