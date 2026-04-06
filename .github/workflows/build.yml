@@ -1,0 +1,47 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            platform: mac
+          - os: windows-latest
+            platform: win
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Build & Package
+        working-directory: app
+        run: npm run electron:build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Mac DMG
+        if: matrix.platform == 'mac'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/release/*.dmg
+
+      - name: Upload Windows EXE
+        if: matrix.platform == 'win'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/release/*.exe
