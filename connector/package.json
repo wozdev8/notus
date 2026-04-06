@@ -1,10 +1,10 @@
 {
-  "name": "notevault-connector",
+  "name": "notus-connector",
   "version": "1.1.0",
-  "description": "NoteVault local connector - bridges your private notes to Claude Code for AI analysis",
+  "description": "Notus local connector - bridges your private notes to Claude Code for AI analysis",
   "main": "server.js",
   "bin": {
-    "notevault-connector": "./server.js"
+    "notus-connector": "./server.js"
   },
   "scripts": {
     "start": "node server.js",

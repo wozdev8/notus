@@ -1,4 +1,4 @@
-const CACHE_NAME = 'notevault-v1';
+const CACHE_NAME = 'notus-v1';
 const ASSETS = [
   '/',
   '/index.html',

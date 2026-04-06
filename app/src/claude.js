@@ -1,7 +1,7 @@
 // Claude connector bridge
-let port = parseInt(localStorage.getItem('notevault-port') || '9471');
+let port = parseInt(localStorage.getItem('notus-port') || '9471');
 
-export function setPort(p) { port = p; localStorage.setItem('notevault-port', String(p)); }
+export function setPort(p) { port = p; localStorage.setItem('notus-port', String(p)); }
 export function getPort() { return port; }
 
 export async function checkHealth() {

@@ -1,6 +1,6 @@
 {
-  "name": "NoteVault",
-  "short_name": "NoteVault",
+  "name": "Notus",
+  "short_name": "Notus",
   "description": "Private notes that never leave your device. Analyze with Claude Code AI.",
   "start_url": "/",
   "display": "standalone",

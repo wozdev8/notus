@@ -83,7 +83,7 @@ export function NoteEditor({ note, onContentChange, theme }) {
 
   const editor = useCreateBlockNote({
     domAttributes: {
-      editor: { class: 'notevault-editor' },
+      editor: { class: 'notus-editor' },
     },
     uploadFile: async (file) => {
       return new Promise((resolve, reject) => {

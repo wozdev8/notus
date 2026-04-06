@@ -245,7 +245,7 @@ export function App() {
   // Import/Export
   const exportAll = () => {
     const blob = new Blob([JSON.stringify(notes, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'notevault.json'; a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'notus.json'; a.click();
   };
   const importNotes = () => {
     const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';

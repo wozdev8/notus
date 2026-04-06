@@ -1,10 +1,10 @@
 #!/bin/bash
-# NoteVault - Start all services
+# Notus - Start all services
 # Usage: ./start.sh
 
 echo ""
 echo "  ╔══════════════════════════════════════════╗"
-echo "  ║           NoteVault Launcher              ║"
+echo "  ║           Notus Launcher              ║"
 echo "  ╠══════════════════════════════════════════╣"
 echo "  ║  Starting all services...                ║"
 echo "  ╚══════════════════════════════════════════╝"

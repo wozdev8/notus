@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// NoteVault Connector - Local bridge between NoteVault PWA and Claude Code
+// Notus Connector - Local bridge between Notus PWA and Claude Code
 // All data stays on your machine. Nothing is sent to external servers.
 
 const http = require('http');
@@ -35,11 +35,11 @@ const ARGS = parseArgs(process.argv);
 
 if (ARGS.help) {
   console.log(`
-NoteVault Connector v${VERSION}
-Local bridge between NoteVault PWA and Claude Code CLI.
+Notus Connector v${VERSION}
+Local bridge between Notus PWA and Claude Code CLI.
 
 Usage:
-  notevault-connector [options]
+  notus-connector [options]
 
 Options:
   --port <number>   Port to listen on (default: 9471)
@@ -57,8 +57,8 @@ Endpoints:
   POST /backup        Backup notes to local disk
 
 Examples:
-  notevault-connector
-  notevault-connector --port=8080 --verbose
+  notus-connector
+  notus-connector --port=8080 --verbose
 `);
   process.exit(0);
 }
@@ -70,7 +70,7 @@ if (ARGS.version) {
 
 const PORT = ARGS.port;
 const VERBOSE = ARGS.verbose;
-const DATA_DIR = path.join(os.homedir(), '.notevault');
+const DATA_DIR = path.join(os.homedir(), '.notus');
 
 if (isNaN(PORT) || PORT < 1 || PORT > 65535) {
   console.error(`Error: Invalid port number. Must be between 1 and 65535.`);
@@ -496,7 +496,7 @@ const server = http.createServer(async (req, res) => {
       const ALLOWED_TYPES = /^(image\/(png|jpeg|webp|gif)|application\/pdf|text\/(plain|markdown|csv)|application\/json)$/;
 
       if (hasFiles) {
-        const uploadDir = path.join(os.tmpdir(), 'notevault-uploads');
+        const uploadDir = path.join(os.tmpdir(), 'notus-uploads');
         if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
         for (const file of body.files.slice(0, 5)) {
@@ -552,7 +552,7 @@ User instruction: ${userPrompt}
 ${fileContext}
 ${noteText ? `Current note content:\n${noteText}` : 'The note is currently empty.'}`;
 
-      const uploadDir = path.join(os.tmpdir(), 'notevault-uploads');
+      const uploadDir = path.join(os.tmpdir(), 'notus-uploads');
       let result;
       try {
         result = await askClaude(fullPrompt, {
@@ -714,11 +714,11 @@ server.listen(PORT, '127.0.0.1', () => {
 
   console.log('');
   console.log('  +--------------------------------------------+');
-  console.log(`  |        NoteVault Connector v${VERSION.padEnd(15)}|`);
+  console.log(`  |        Notus Connector v${VERSION.padEnd(15)}|`);
   console.log('  +--------------------------------------------+');
   console.log(`  |  Server:      ${addr.padEnd(29)}|`);
   console.log(`  |  Claude Code: ${claudeStatus.padEnd(29)}|`);
-  console.log(`  |  Data dir:    ${'~/.notevault'.padEnd(29)}|`);
+  console.log(`  |  Data dir:    ${'~/.notus'.padEnd(29)}|`);
   console.log(`  |  Verbose:     ${String(VERBOSE).padEnd(29)}|`);
   console.log('  +--------------------------------------------+');
   console.log('');
@@ -737,12 +737,12 @@ server.listen(PORT, '127.0.0.1', () => {
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
     console.error(`\nError: Port ${PORT} is already in use.`);
-    console.error(`  - Another instance of NoteVault Connector may be running`);
-    console.error(`  - Try a different port: notevault-connector --port=${PORT + 1}`);
+    console.error(`  - Another instance of Notus Connector may be running`);
+    console.error(`  - Try a different port: notus-connector --port=${PORT + 1}`);
   } else if (err.code === 'EACCES') {
     console.error(`\nError: Permission denied for port ${PORT}.`);
     console.error(`  - Ports below 1024 require elevated privileges`);
-    console.error(`  - Try a higher port: notevault-connector --port=9471`);
+    console.error(`  - Try a higher port: notus-connector --port=9471`);
   } else {
     console.error(`\nServer error: ${err.message}`);
   }

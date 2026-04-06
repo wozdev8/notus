@@ -1,5 +1,5 @@
 // IndexedDB wrapper — all notes stay local
-const DB_NAME = 'notevault';
+const DB_NAME = 'notus';
 const DB_VERSION = 1;
 const STORE = 'notes';
 

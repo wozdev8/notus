@@ -1,7 +1,7 @@
 {
-  "name": "notevault",
+  "name": "notus",
   "version": "1.0.0",
-  "description": "NoteVault - Private local notes with Claude Code AI analysis",
+  "description": "Notus - Private local notes with Claude Code AI analysis",
   "scripts": {
     "app": "npx serve app -l 3000",
     "connector": "node connector/server.js",

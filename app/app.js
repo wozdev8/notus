@@ -1,6 +1,6 @@
-// NoteVault — Private Local Notes with Editor.js (Notion-like block editor)
+// Notus — Private Local Notes with Editor.js (Notion-like block editor)
 
-const DB_NAME = 'notevault';
+const DB_NAME = 'notus';
 const DB_VERSION = 1;
 const STORE_NAME = 'notes';
 
@@ -74,7 +74,7 @@ async function init() {
   await db.init();
   notes = await db.getAll();
   loadTheme();
-  const savedPort = localStorage.getItem('notevault-port');
+  const savedPort = localStorage.getItem('notus-port');
   if (savedPort) connectorPort = parseInt(savedPort);
   renderNotesList();
   renderTags();
@@ -588,7 +588,7 @@ function showConfirm(title, message) {
 function exportAllNotes() {
   const data = JSON.stringify(notes, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'notevault-export.json'; a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'notus-export.json'; a.click();
   toast(`Exported ${notes.length} notes`);
 }
 
@@ -626,7 +626,7 @@ function openSettings() { $('#settings-modal').classList.add('visible'); }
 function closeSettings() { $('#settings-modal').classList.remove('visible'); }
 function saveSettings() {
   connectorPort = parseInt($('#connector-port-input').value) || 9471;
-  localStorage.setItem('notevault-port', connectorPort);
+  localStorage.setItem('notus-port', connectorPort);
   closeSettings(); checkConnector(); toast('Saved');
 }
 
@@ -634,9 +634,9 @@ function saveSettings() {
 function toggleTheme() {
   const next = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('notevault-theme', next);
+  localStorage.setItem('notus-theme', next);
 }
-function loadTheme() { document.documentElement.setAttribute('data-theme', localStorage.getItem('notevault-theme') || 'dark'); }
+function loadTheme() { document.documentElement.setAttribute('data-theme', localStorage.getItem('notus-theme') || 'dark'); }
 function toggleSidebar() { $('#sidebar').classList.toggle('mobile-open'); $('#sidebar-overlay')?.classList.toggle('visible'); }
 function closeSidebar() { $('#sidebar').classList.remove('mobile-open'); $('#sidebar-overlay')?.classList.remove('visible'); }
 
